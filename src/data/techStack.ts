@@ -1,0 +1,43 @@
+import type { TechTool } from '../types/index';
+
+export const techStack: TechTool[] = [
+  { name: 'AWS', iconifyId: 'logos:aws', category: 'Cloud Platforms' },
+  { name: 'Azure', iconifyId: 'logos:microsoft-azure', category: 'Cloud Platforms' },
+  { name: 'GCP', iconifyId: 'logos:google-cloud', category: 'Cloud Platforms' },
+  { name: 'Kubernetes', iconifyId: 'logos:kubernetes', category: 'Containers & Orchestration' },
+  { name: 'Docker', iconifyId: 'logos:docker-icon', category: 'Containers & Orchestration' },
+  { name: 'Helm', iconifyId: 'logos:helm', category: 'Containers & Orchestration' },
+  { name: 'FluxCD', iconifyId: 'logos:flux', category: 'Containers & Orchestration' },
+  { name: 'GitHub Actions', iconifyId: 'logos:github-actions', category: 'CI/CD & IaC' },
+  { name: 'Terraform', iconifyId: 'logos:terraform-icon', category: 'CI/CD & IaC' },
+  { name: 'CloudFormation', iconifyId: 'logos:aws', category: 'CI/CD & IaC' },
+  { name: 'Prometheus', iconifyId: 'logos:prometheus', category: 'Observability' },
+  { name: 'Grafana', iconifyId: 'logos:grafana', category: 'Observability' },
+  { name: 'Loki', iconifyId: 'logos:grafana', category: 'Observability' },
+  { name: 'Tempo', iconifyId: 'logos:grafana', category: 'Observability' },
+  { name: 'Mimir', iconifyId: 'logos:grafana', category: 'Observability' },
+  { name: 'Pyroscope', iconifyId: 'logos:grafana', category: 'Observability' },
+  { name: 'Thanos', iconifyId: 'logos:prometheus', category: 'Observability' },
+  { name: 'Grafana Alloy', iconifyId: 'logos:grafana', category: 'Observability' },
+  { name: 'Backstage', iconifyId: 'logos:backstage-icon', category: 'Platform Engineering' },
+  { name: 'Kong', iconifyId: 'logos:kong', category: 'Platform Engineering' },
+  { name: 'Bash', iconifyId: 'logos:bash-icon', category: 'Scripting & OS' },
+  { name: 'Python', iconifyId: 'logos:python', category: 'Scripting & OS' },
+  { name: 'PowerShell', iconifyId: 'logos:powershell', category: 'Scripting & OS' },
+  { name: 'Linux', iconifyId: 'logos:linux-tux', category: 'Scripting & OS' },
+  { name: 'ChatGPT', iconifyId: 'logos:openai-icon', category: 'AI Tooling' },
+  { name: 'Claude', iconifyId: 'simple-icons:anthropic', category: 'AI Tooling' },
+  { name: 'GitHub Copilot', iconifyId: 'logos:github-copilot', category: 'AI Tooling' },
+  { name: 'Cursor', iconifyId: 'logos:cursor', category: 'AI Tooling' },
+  { name: 'Grafana LLM', iconifyId: 'logos:grafana', category: 'AI Tooling' },
+];
+
+export const techCategories = [
+  { name: 'Cloud Platforms' as const, icon: '☁️' },
+  { name: 'Containers & Orchestration' as const, icon: '🚢' },
+  { name: 'CI/CD & IaC' as const, icon: '🏗️' },
+  { name: 'Observability' as const, icon: '📊' },
+  { name: 'Platform Engineering' as const, icon: '🛠️' },
+  { name: 'Scripting & OS' as const, icon: '💻' },
+  { name: 'AI Tooling' as const, icon: '🤖' },
+];

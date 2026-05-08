@@ -1,0 +1,75 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'pyroscope-rollout')!;
+---
+
+<ProjectLayout project={project}>
+  <h2>The Problem</h2>
+  <p>
+    Our engineering team was flying blind on CPU and memory performance. When latency spikes hit production,
+    the only tools available were Prometheus metrics and logs — useful, but they couldn't tell us <em>why</em>
+    a function was consuming 80% of CPU on service X at 2am on a Tuesday.
+  </p>
+  <p>
+    Incidents that should've been diagnosed in minutes were stretching to 45+ minutes because engineers
+    had to manually correlate traces, logs, and guesswork. We needed continuous profiling — and we needed
+    it across 20+ heterogeneous microservices running .NET, Node.js, and Go.
+  </p>
+
+  <h2>The Approach</h2>
+  <p>
+    We chose Grafana Pyroscope because it natively integrates with our existing LGTM stack — no new
+    dashboards, no new query languages. The rollout strategy was:
+  </p>
+  <ul>
+    <li>Deploy Pyroscope operator via Helm + FluxCD (GitOps — no manual kubectl applies)</li>
+    <li>Configure Grafana Alloy as the profile collection agent for each service type</li>
+    <li>Wire Kong Ingress plugin for per-team API auth and RBAC</li>
+    <li>Integrate flame graphs into existing Grafana dashboards with drill-down links from traces</li>
+  </ul>
+
+  <h2>Implementation</h2>
+  <h3>Kubernetes Deployment</h3>
+  <p>
+    Pyroscope was deployed as a StatefulSet with object storage (S3) for long-term profile retention.
+    FluxCD handled reconciliation — any config drift triggered an automatic sync, keeping the cluster state
+    declarative and auditable.
+  </p>
+
+  <h3>Grafana Alloy Pipelines</h3>
+  <p>
+    Each language required a different scrape strategy. .NET used the eBPF profiler via Alloy's
+    <code>pyroscope.ebpf</code> component. Node.js services used the V8 CPU profiler endpoint.
+    Go services exposed <code>/debug/pprof</code> which Alloy scraped every 15 seconds.
+  </p>
+
+  <h3>Kong Auth</h3>
+  <p>
+    We used the Kong JWT plugin to enforce per-team tokens on the Pyroscope API. Each squad got
+    their own token scoped to their namespace — no team could accidentally query another team's profiles.
+    Zero prod incidents post-launch.
+  </p>
+
+  <h2>Outcome</h2>
+  <div class="grid grid-cols-2 gap-3 my-6">
+    {Object.entries(project.metrics).map(([k, v]) => (
+      <div class="p-4 rounded-xl border border-[#27272A] bg-[#111111] text-center">
+        <p class="text-2xl font-bold text-[#3B82F6]">{v}</p>
+        <p class="text-xs text-[#71717A] mt-1">{k}</p>
+      </div>
+    ))}
+  </div>
+  <p>
+    Average debug time dropped from 45 minutes to ~12 minutes. Engineers started proactively checking
+    flame graphs before on-call shifts, catching regressions before they became incidents.
+  </p>
+
+  <h2>What I Learned</h2>
+  <ul>
+    <li>eBPF profilers need kernel version pinning — two nodes running different kernels caused silent profile gaps for 3 days before we caught it</li>
+    <li>Profile cardinality matters. Label explosion (per-request labels) brought Pyroscope to its knees in staging. Label strategy needs upfront design.</li>
+    <li>Runbooks are the real product. The tooling is 30% of the value; getting 50 engineers to actually use it is the other 70%.</li>
+  </ul>
+</ProjectLayout>

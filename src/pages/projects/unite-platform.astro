@@ -1,0 +1,64 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'unite-platform')!;
+---
+
+<ProjectLayout project={project}>
+  <h2>The Problem</h2>
+  <p>
+    "Where's the runbook for auth-service?" "Which team owns billing?" "How do I trigger a manual
+    deploy?" Three different Slack channels, a Confluence page nobody updated since 2023, and a
+    GitHub Actions workflow buried in a repo nobody remembered the name of.
+  </p>
+  <p>
+    We had 50+ engineers, 50+ services, and zero single source of truth. Onboarding a new engineer
+    took 2 weeks of pair programming just to learn where things were.
+  </p>
+
+  <h2>The Approach</h2>
+  <p>
+    Backstage as the IDP foundation. Not because it's perfect — it isn't — but because the plugin
+    ecosystem meant we didn't have to build GitHub, PagerDuty, or Grafana integrations from scratch.
+  </p>
+  <ul>
+    <li>Bootstrap Backstage on Kubernetes (Helm chart, PostgreSQL backend)</li>
+    <li>Populate service catalog via auto-discovery from GitHub topics</li>
+    <li>Integrate PagerDuty for on-call visibility per service</li>
+    <li>Build a custom Deployment Tracker plugin showing live CD status</li>
+    <li>Run 5 enablement sessions — get engineers actually using it</li>
+  </ul>
+
+  <h2>Implementation</h2>
+  <h3>Catalog Auto-Discovery</h3>
+  <p>
+    Every GitHub repo tagged with the <code>backstage-entity</code> topic was automatically
+    discovered and imported. Teams only needed to add a <code>catalog-info.yaml</code> to their repo —
+    3 required fields, not 30.
+  </p>
+
+  <h3>Custom Deployment Tracker Plugin</h3>
+  <p>
+    The built-in GitHub Actions plugin only showed run status. We needed: which version is deployed
+    to which environment, with a one-click rollback button. Built in TypeScript using Backstage's
+    frontend plugin scaffold. Called our internal deployment API, rendered a traffic-light status grid.
+  </p>
+
+  <h2>Outcome</h2>
+  <div class="grid grid-cols-2 gap-3 my-6">
+    {Object.entries(project.metrics).map(([k, v]) => (
+      <div class="p-4 rounded-xl border border-[#27272A] bg-[#111111] text-center">
+        <p class="text-2xl font-bold text-[#3B82F6]">{v}</p>
+        <p class="text-xs text-[#71717A] mt-1">{k}</p>
+      </div>
+    ))}
+  </div>
+
+  <h2>What I Learned</h2>
+  <ul>
+    <li>Adoption is a product problem, not a tech problem. The first version was technically complete and nobody used it. Version 2 had a Slack bot that surfaced UNITE links in existing workflows.</li>
+    <li>Backstage performance degrades badly with 200+ catalog entries if you don't index properly. Add PostgreSQL indexes early.</li>
+    <li>Platform engineering is empathy engineering. Every friction point is a place where an engineer gave up and went back to Slack.</li>
+  </ul>
+</ProjectLayout>

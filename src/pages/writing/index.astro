@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { writingPosts } from '../../data/writing';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title="Writing - Vithushan" description="Practical DevOps, observability, and platform engineering notes from production work.">
+  <section class="max-w-5xl mx-auto px-6 pt-28 pb-20">
+    <a href={`${base}/#writing`} class="inline-flex items-center gap-2 text-sm text-[#71717A] hover:text-[#FAFAFA] transition-colors mb-10">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+      </svg>
+      Back home
+    </a>
+
+    <p class="section-label mb-3">// WRITING</p>
+    <h1 class="text-3xl md:text-5xl font-bold text-[#FAFAFA] mb-4">Production notes and field guides</h1>
+    <p class="text-[#A1A1AA] max-w-2xl mb-12">
+      Practical lessons from observability, platform engineering, GitOps, and release work.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {writingPosts.map(post => (
+        <article class="p-6 rounded-xl border border-[#27272A] bg-[#111111] hover:border-[#3F3F46] transition-all">
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            {post.tags.map(tag => (
+              <span class="px-2 py-0.5 text-xs rounded-md bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20">{tag}</span>
+            ))}
+          </div>
+          <h2 class="font-bold text-[#FAFAFA] text-xl mb-3 leading-snug">{post.title}</h2>
+          <p class="text-sm text-[#A1A1AA] leading-relaxed mb-5">{post.description}</p>
+          <div class="flex items-center justify-between text-xs text-[#71717A]">
+            <span>{post.date}</span>
+            <span>{post.readingTime} min read</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #3B82F6;
+  }
+</style>

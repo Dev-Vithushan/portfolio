@@ -1,0 +1,66 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'ai-flamegraph-analysis')!;
+---
+
+<ProjectLayout project={project}>
+  <h2>The Problem</h2>
+  <p>
+    Pyroscope was live and generating flame graphs. But flame graphs have a steep learning curve —
+    a new engineer staring at a 500-node call stack under pressure at 2am is not going to extract
+    insights quickly. We were generating data but not democratising it.
+  </p>
+  <p>
+    P95 latency investigations still required a senior engineer who knew what "wide flat nodes"
+    vs "deep narrow nodes" meant. That was a bottleneck and a burnout risk.
+  </p>
+
+  <h2>The Approach</h2>
+  <p>
+    Grafana's LLM plugin (introduced in Grafana 10.x) allows you to call an LLM from within a
+    Grafana panel using River configuration. The plan:
+  </p>
+  <ul>
+    <li>Capture the top 20 hottest call stacks from Pyroscope's API at alert time</li>
+    <li>Inject service metadata: recent deployments, current error rate, SLO status</li>
+    <li>Send to the LLM plugin with a carefully engineered system prompt</li>
+    <li>Render the plain-English analysis in a Grafana panel next to the flame graph</li>
+  </ul>
+
+  <h2>Implementation</h2>
+  <h3>Prompt Engineering</h3>
+  <p>
+    Generic "explain this stack trace" prompts produce useless output. The prompt that worked:
+  </p>
+  <p>
+    <em>System:</em> "You are a senior SRE analysing a production latency incident. The user is
+    an on-call engineer who may be unfamiliar with this service. Be concise. Lead with the root cause.
+    Use the deployment history and error rate to distinguish regression from pre-existing behaviour."
+  </p>
+
+  <h3>Context Injection</h3>
+  <p>
+    Before every LLM call, a Python sidecar fetched: (1) last 5 deployments to the affected service
+    from GitHub Actions API, (2) current error rate from Prometheus, (3) the top 5 flame graph nodes
+    by self-time. This context window was ~800 tokens — cheap and fast.
+  </p>
+
+  <h2>Outcome</h2>
+  <div class="grid grid-cols-2 gap-3 my-6">
+    {Object.entries(project.metrics).map(([k, v]) => (
+      <div class="p-4 rounded-xl border border-[#27272A] bg-[#111111] text-center">
+        <p class="text-2xl font-bold text-[#3B82F6]">{v}</p>
+        <p class="text-xs text-[#71717A] mt-1">{k}</p>
+      </div>
+    ))}
+  </div>
+
+  <h2>What I Learned</h2>
+  <ul>
+    <li>LLMs hallucinate stack frames. Always show the raw data alongside the AI summary — never replace, only augment.</li>
+    <li>Latency of the LLM call (~1-2s) matters during incidents. We pre-generate summaries on alert trigger, not on dashboard load.</li>
+    <li>The biggest win wasn't speed — it was confidence. Junior engineers stopped second-guessing their reads and acted faster.</li>
+  </ul>
+</ProjectLayout>

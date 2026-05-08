@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg-primary: #0A0A0A;
+  --color-bg-secondary: #111111;
+  --color-bg-tertiary: #1A1A1A;
+  --color-text-primary: #FAFAFA;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted: #71717A;
+  --color-accent: #3B82F6;
+  --color-border: #27272A;
+  --color-border-muted: #3F3F46;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+html:not(.dark) {
+  color-scheme: light;
+}
+
+body {
+  font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+code, pre {
+  font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: #FAFAFA;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-thumb { background: #27272A; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
+
+html:not(.dark) body,
+html:not(.dark) [class*="bg-[#0A0A0A]"] {
+  background-color: #F8FAFC !important;
+}
+
+html:not(.dark) [class*="bg-[#111111]"],
+html:not(.dark) .experience-card,
+html:not(.dark) .tech-panel,
+html:not(.dark) .metric-block,
+html:not(.dark) .experience-count {
+  background-color: #FFFFFF !important;
+}
+
+html:not(.dark) [class*="bg-[#1A1A1A]"],
+html:not(.dark) .tool-chip,
+html:not(.dark) .tech-row span,
+html:not(.dark) .profile-photo {
+  background-color: #F1F5F9 !important;
+}
+
+html:not(.dark) [class*="text-[#FAFAFA]"],
+html:not(.dark) [class*="hover:text-[#FAFAFA]"]:hover,
+html:not(.dark) .experience-heading h3,
+html:not(.dark) .metric-value {
+  color: #0F172A !important;
+}
+
+html:not(.dark) [class*="text-[#A1A1AA]"],
+html:not(.dark) [class*="hover:text-[#A1A1AA]"]:hover,
+html:not(.dark) .experience-summary,
+html:not(.dark) details li {
+  color: #475569 !important;
+}
+
+html:not(.dark) [class*="text-[#71717A]"],
+html:not(.dark) .experience-meta,
+html:not(.dark) .metric-label,
+html:not(.dark) .experience-count small {
+  color: #64748B !important;
+}
+
+html:not(.dark) [class*="border-[#27272A]"],
+html:not(.dark) [class*="border-[#3F3F46]"],
+html:not(.dark) .experience-card,
+html:not(.dark) .tech-panel,
+html:not(.dark) .metric-block,
+html:not(.dark) .experience-count,
+html:not(.dark) .tool-chip,
+html:not(.dark) .tech-row span,
+html:not(.dark) details {
+  border-color: #D8E0EA !important;
+}
+
+html:not(.dark) [class*="hover:bg-[#1A1A1A]"]:hover {
+  background-color: #E2E8F0 !important;
+}
+
+html:not(.dark) .bg-gradient-radial {
+  background: radial-gradient(ellipse at center, transparent 34%, #F8FAFC 82%) !important;
+}
+
+html:not(.dark) .grid-bg {
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.10) 1px, transparent 1px) !important;
+}
+
+html:not(.dark) .profile-frame {
+  background:
+    linear-gradient(#F8FAFC, #F8FAFC) padding-box,
+    linear-gradient(135deg, rgba(37, 99, 235, 0.9), rgba(20, 184, 166, 0.72), rgba(124, 58, 237, 0.8)) border-box !important;
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.06),
+    0 20px 60px rgba(37, 99, 235, 0.18) !important;
+}
+
+html:not(.dark) .experience-card,
+html:not(.dark) .tech-panel {
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08) !important;
+}
+
+html:not(.dark) .btn-secondary {
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+
+html:not(.dark) .btn-secondary:hover {
+  color: #2563EB !important;
+  border-color: #2563EB !important;
+}
+
+html:not(.dark) .hero-name {
+  color: #0F172A !important;
+}
+
+html:not(.dark) .name-kicker {
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: rgba(37, 99, 235, 0.18) !important;
+  color: #2563EB !important;
+}
+
+html:not(.dark) .panel-header,
+html:not(.dark) .prose-dark h2 {
+  border-color: #D8E0EA !important;
+}
+
+html:not(.dark) .panel-header h3,
+html:not(.dark) .tool-count,
+html:not(.dark) .prose-dark h2,
+html:not(.dark) .prose-dark h3 {
+  color: #0F172A !important;
+}
+
+html:not(.dark) .prose-dark {
+  color: #475569 !important;
+}
+
+html:not(.dark) .prose-dark code {
+  background: #E2E8F0 !important;
+  color: #2563EB !important;
+}
+
+html:not(.dark) ::selection {
+  background-color: rgba(37, 99, 235, 0.18);
+  color: #0F172A;
+}
+
+html:not(.dark) ::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+}

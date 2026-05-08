@@ -1,0 +1,59 @@
+---
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { projects } from '../../data/projects';
+
+const project = projects.find(p => p.slug === 'global-release-engineering')!;
+---
+
+<ProjectLayout project={project}>
+  <h2>The Problem</h2>
+  <p>
+    Sitecore's SaaS platform serves customers across US, EU, and APAC. A deploy that worked in
+    us-east-1 could silently break eu-west-1 due to regional configuration drift, CDN cache state,
+    or data residency requirements. And when it did break, rollback was a 45-minute manual process.
+  </p>
+
+  <h2>The Approach</h2>
+  <p>
+    GitOps-first, with automated health gates between regional rollouts:
+  </p>
+  <ul>
+    <li>FluxCD Kustomizations with regional overlays — one source of truth, three deployment targets</li>
+    <li>Canary gates using Prometheus metrics: error rate, P95 latency, SLO burn rate</li>
+    <li>Automated rollback triggered by SLO breaches — no human required in the blast path</li>
+    <li>Parallel region deploys where safe; sequential where data consistency required it</li>
+  </ul>
+
+  <h2>Implementation</h2>
+  <h3>GitOps Structure</h3>
+  <p>
+    FluxCD Kustomization tree: <code>base/</code> → <code>overlays/us-east-1/</code>,
+    <code>overlays/eu-west-1/</code>, <code>overlays/ap-southeast-1/</code>. Region-specific
+    secrets via External Secrets Operator pulling from AWS Secrets Manager per-region.
+  </p>
+
+  <h3>Canary Analysis</h3>
+  <p>
+    After each regional rollout, a 10-minute observation window runs. If error rate exceeds 0.1%
+    or P95 latency increases by more than 20% vs. the 24-hour baseline, FluxCD automatically
+    reverts the Kustomization to the previous Git SHA. Engineers get a Slack alert with the
+    diff and rollback reason.
+  </p>
+
+  <h2>Outcome</h2>
+  <div class="grid grid-cols-2 gap-3 my-6">
+    {Object.entries(project.metrics).map(([k, v]) => (
+      <div class="p-4 rounded-xl border border-[#27272A] bg-[#111111] text-center">
+        <p class="text-2xl font-bold text-[#3B82F6]">{v}</p>
+        <p class="text-xs text-[#71717A] mt-1">{k}</p>
+      </div>
+    ))}
+  </div>
+
+  <h2>What I Learned</h2>
+  <ul>
+    <li>Canary thresholds need per-service tuning. A 0.1% error rate is a critical alert for auth-service but normal background noise for the recommendation engine.</li>
+    <li>GitOps rollback is fast but not instant — FluxCD reconciliation takes 30-90 seconds. For P0 incidents, we still have a break-glass manual path.</li>
+    <li>The hardest part of global releases is the meetings, not the code. Coordinating EU data residency requirements across 3 teams is an organisational challenge, not a technical one.</li>
+  </ul>
+</ProjectLayout>

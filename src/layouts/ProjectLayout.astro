@@ -1,0 +1,103 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { Project } from '../types/index';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title={`${project.title} — Vithushan`} description={project.tagline}>
+  <!-- Reading progress bar -->
+  <div id="progress-bar" class="fixed top-0 left-0 h-0.5 bg-[#3B82F6] z-50 transition-all duration-100" style="width: 0%"></div>
+
+  <article class="max-w-3xl mx-auto px-6 pt-28 pb-20">
+    <!-- Back link -->
+    <a href={`${base}/#projects`} class="inline-flex items-center gap-2 text-sm text-[#71717A] hover:text-[#FAFAFA] transition-colors mb-10">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+      </svg>
+      Back to projects
+    </a>
+
+    <!-- Header -->
+    <div class="mb-12">
+      <div class="flex flex-wrap gap-2 mb-4">
+        <span class="px-3 py-1 text-xs font-medium rounded-full bg-green-400/10 text-green-400 border border-green-400/20">
+          {project.status}
+        </span>
+        <span class="px-3 py-1 text-xs rounded-full border border-[#27272A] text-[#71717A]">{project.period}</span>
+      </div>
+
+      <h1 class="text-3xl md:text-5xl font-bold text-[#FAFAFA] mb-4 leading-tight">{project.title}</h1>
+      <p class="text-lg text-[#A1A1AA] mb-6 italic">{project.tagline}</p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div class="p-3 rounded-lg bg-[#111111] border border-[#27272A]">
+          <p class="text-xs text-[#71717A] mb-1">Role</p>
+          <p class="text-sm text-[#FAFAFA] font-medium">{project.role}</p>
+        </div>
+        <div class="p-3 rounded-lg bg-[#111111] border border-[#27272A]">
+          <p class="text-xs text-[#71717A] mb-1">Company</p>
+          <p class="text-sm text-[#FAFAFA] font-medium">{project.company}</p>
+        </div>
+        <div class="p-3 rounded-lg bg-[#111111] border border-[#27272A] col-span-2">
+          <p class="text-xs text-[#71717A] mb-1">Period</p>
+          <p class="text-sm text-[#FAFAFA] font-medium">{project.period}</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        {project.tech.map(t => (
+          <span class="px-3 py-1 text-xs rounded-lg border border-[#27272A] text-[#A1A1AA] bg-[#111111]">{t}</span>
+        ))}
+      </div>
+    </div>
+
+    <!-- Article content -->
+    <div class="prose-dark space-y-12">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .prose-dark {
+    color: #A1A1AA;
+    line-height: 1.8;
+  }
+  .prose-dark h2 {
+    color: #FAFAFA;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #27272A;
+  }
+  .prose-dark h3 {
+    color: #FAFAFA;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose-dark p { margin-bottom: 1rem; }
+  .prose-dark ul { list-style: none; padding: 0; margin-bottom: 1rem; }
+  .prose-dark ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; }
+  .prose-dark ul li::before { content: "▸"; position: absolute; left: 0; color: #3B82F6; }
+  .prose-dark code { font-family: 'IBM Plex Mono', monospace; background: #1A1A1A; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.875rem; color: #3B82F6; }
+</style>
+
+<script>
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    if (!bar) return;
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    bar.style.width = `${(scrolled / total) * 100}%`;
+  });
+</script>

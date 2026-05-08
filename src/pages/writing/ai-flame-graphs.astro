@@ -1,0 +1,100 @@
+---
+import WritingLayout from '../../layouts/WritingLayout.astro';
+import { writingPosts } from '../../data/writing';
+
+const post = writingPosts.find(p => p.slug === 'ai-flame-graphs')!;
+---
+
+<WritingLayout post={post}>
+  <h2>The Problem with Flame Graphs</h2>
+  <p>
+    Flame graphs are one of the most information-dense debugging tools available. They're also
+    opaque to anyone who didn't build the service. A 6-layer stack trace through a .NET runtime,
+    an HTTP framework, three middleware layers, and your own code tells an expert exactly what's
+    happening. It tells everyone else nothing.
+  </p>
+  <p>
+    On-call engineers at 2am don't always have that expertise. And even experts spend time parsing
+    the visualization before they start reasoning about the cause. We wanted to close that gap.
+  </p>
+
+  <h2>What We Built</h2>
+  <p>
+    We integrated the Grafana LLM plugin with Pyroscope to add an "Explain this flame graph"
+    button in Grafana's Explore view. When clicked, it:
+  </p>
+  <ul>
+    <li>Extracts the top N hottest stack frames from the active profile query</li>
+    <li>Sends them to a Claude API endpoint alongside service metadata (language, team, recent deploys)</li>
+    <li>Streams the explanation back inline in the Grafana panel</li>
+  </ul>
+  <p>
+    The result is a plain-English summary: what's running hot, likely cause, and suggested next steps.
+    Not a replacement for reading the flame graph — a starting point for triage.
+  </p>
+
+  <h2>The Grafana LLM Plugin</h2>
+  <p>
+    The Grafana LLM plugin is an official Grafana Labs plugin that provides a standard interface for
+    connecting Grafana to LLM backends. It handles auth, streaming, and a shared config so you don't
+    need to embed API keys in every custom panel.
+  </p>
+  <p>
+    Setup is straightforward: install the plugin, configure the LLM provider (OpenAI or a compatible
+    API), and then call it from any panel using the plugin's JavaScript API. Pyroscope ≥1.5 is
+    required for the flame graph data to be exposed in the right format.
+  </p>
+
+  <h2>The Prompt</h2>
+  <p>
+    The hard part wasn't the integration — it was the prompt. Raw stack frame names are not LLM-friendly.
+    A frame like <code>System.Net.Http.HttpClientHandler.SendAsync</code> is meaningful to a .NET
+    developer but needs context for the model to reason about it correctly.
+  </p>
+  <p>
+    What worked: a structured prompt that includes the runtime, the top 10 frames by CPU percentage,
+    the total profile duration, and a brief service description pulled from our Backstage catalog.
+    The model then answers three questions:
+  </p>
+  <ul>
+    <li>What is the hottest code path and what does it do?</li>
+    <li>Is this pattern normal for this type of service, or does it look like a regression?</li>
+    <li>What would you check next?</li>
+  </ul>
+  <p>
+    Constraining the output to those three questions cut hallucination rate significantly compared
+    to open-ended prompts.
+  </p>
+
+  <h2>What It Gets Right</h2>
+  <p>
+    The LLM is good at explaining what a stack frame does in plain English, especially for well-known
+    frameworks. "This call is allocating a new HTTP connection because the connection pool is
+    exhausted" is the kind of summary that saves five minutes of Googling at 3am.
+  </p>
+  <p>
+    It's also good at spotting anomalies when given baseline context. If the service description
+    mentions "stateless API handler" and the flame graph shows 40% of CPU in serialization, the
+    model flags that as unexpected.
+  </p>
+
+  <h2>What It Gets Wrong</h2>
+  <p>
+    Anything proprietary or internal. The model has no knowledge of your codebase. If the hottest
+    frame is <code>OrderProcessor.ApplyDiscountRules</code>, it can describe it as "business logic
+    applying discount calculations" but can't tell you whether that's regressed since the last deploy.
+  </p>
+  <p>
+    We partially addressed this by including the git diff summary of recent deploys in the prompt.
+    It's imperfect — the context window fills up fast — but it meaningfully improves explanations
+    for post-deploy regressions.
+  </p>
+
+  <h2>Lessons</h2>
+  <ul>
+    <li>Start with a constrained output format. Open-ended LLM summaries for technical data are noisy and hard to scan during an incident.</li>
+    <li>Pull service context from your catalog (Backstage, PagerDuty, wherever). A flame graph without service context is half the information.</li>
+    <li>Don't position it as "AI diagnosis" — engineers will over-trust it. Position it as "first read" and keep the raw flame graph prominent.</li>
+    <li>Cache responses keyed by profile query + time window. Identical queries during an incident shouldn't burn API quota for the same result.</li>
+  </ul>
+</WritingLayout>

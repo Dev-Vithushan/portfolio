@@ -1,0 +1,92 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { WritingPost } from '../data/writing';
+
+interface Props {
+  post: WritingPost;
+}
+
+const { post } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const formattedDate = new Date(post.date).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={`${post.title} — Vithushan`} description={post.description}>
+  <div id="progress-bar" class="fixed top-0 left-0 h-0.5 bg-[#3B82F6] z-50 transition-all duration-100" style="width: 0%"></div>
+
+  <article class="max-w-3xl mx-auto px-6 pt-28 pb-20">
+    <a href={`${base}/writing`} class="inline-flex items-center gap-2 text-sm text-[#71717A] hover:text-[#FAFAFA] transition-colors mb-10">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+      </svg>
+      Back to writing
+    </a>
+
+    <div class="mb-12">
+      <div class="flex flex-wrap gap-2 mb-4">
+        {post.tags.map(tag => (
+          <span class="px-3 py-1 text-xs font-medium rounded-full bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20">{tag}</span>
+        ))}
+      </div>
+
+      <h1 class="text-3xl md:text-5xl font-bold text-[#FAFAFA] mb-4 leading-tight">{post.title}</h1>
+      <p class="text-lg text-[#A1A1AA] mb-6 italic">{post.description}</p>
+
+      <div class="flex items-center gap-4 text-sm text-[#71717A]">
+        <span>{formattedDate}</span>
+        <span>·</span>
+        <span>{post.readingTime} min read</span>
+      </div>
+    </div>
+
+    <div class="prose-dark space-y-6">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .prose-dark {
+    color: #A1A1AA;
+    line-height: 1.8;
+  }
+  .prose-dark h2 {
+    color: #FAFAFA;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #27272A;
+  }
+  .prose-dark h3 {
+    color: #FAFAFA;
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose-dark p { margin-bottom: 1rem; }
+  .prose-dark ul { list-style: none; padding: 0; margin-bottom: 1rem; }
+  .prose-dark ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; }
+  .prose-dark ul li::before { content: "▸"; position: absolute; left: 0; color: #3B82F6; }
+  .prose-dark code { font-family: 'IBM Plex Mono', monospace; background: #1A1A1A; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.875rem; color: #3B82F6; }
+  .prose-dark pre { background: #111111; border: 1px solid #27272A; border-radius: 0.75rem; padding: 1.25rem; overflow-x: auto; margin-bottom: 1rem; }
+  .prose-dark pre code { background: none; padding: 0; }
+  .callout { background: #111111; border: 1px solid #3B82F6/30; border-left: 3px solid #3B82F6; border-radius: 0 0.5rem 0.5rem 0; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+</style>
+
+<script>
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    if (!bar) return;
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    bar.style.width = `${(scrolled / total) * 100}%`;
+  });
+</script>

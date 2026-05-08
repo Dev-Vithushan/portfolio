@@ -22,19 +22,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       {writingPosts.map(post => (
-        <article class="p-6 rounded-xl border border-[#27272A] bg-[#111111] hover:border-[#3F3F46] transition-all">
-          <div class="flex flex-wrap gap-1.5 mb-4">
-            {post.tags.map(tag => (
-              <span class="px-2 py-0.5 text-xs rounded-md bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20">{tag}</span>
-            ))}
-          </div>
-          <h2 class="font-bold text-[#FAFAFA] text-xl mb-3 leading-snug">{post.title}</h2>
-          <p class="text-sm text-[#A1A1AA] leading-relaxed mb-5">{post.description}</p>
-          <div class="flex items-center justify-between text-xs text-[#71717A]">
-            <span>{post.date}</span>
-            <span>{post.readingTime} min read</span>
-          </div>
-        </article>
+        <a href={`${base}/writing/${post.slug}`} class="block group">
+          <article class="p-6 rounded-xl border border-[#27272A] bg-[#111111] group-hover:border-[#3F3F46] transition-all h-full">
+            <div class="flex flex-wrap gap-1.5 mb-4">
+              {post.tags.map(tag => (
+                <span class="px-2 py-0.5 text-xs rounded-md bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20">{tag}</span>
+              ))}
+            </div>
+            <h2 class="font-bold text-[#FAFAFA] text-xl mb-3 leading-snug group-hover:text-[#3B82F6] transition-colors">{post.title}</h2>
+            <p class="text-sm text-[#A1A1AA] leading-relaxed mb-5">{post.description}</p>
+            <div class="flex items-center justify-between text-xs text-[#71717A]">
+              <span>{post.date}</span>
+              <span>{post.readingTime} min read</span>
+            </div>
+          </article>
+        </a>
       ))}
     </div>
   </section>

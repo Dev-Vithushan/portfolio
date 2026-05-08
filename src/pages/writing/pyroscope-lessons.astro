@@ -1,0 +1,82 @@
+---
+import WritingLayout from '../../layouts/WritingLayout.astro';
+import { writingPosts } from '../../data/writing';
+
+const post = writingPosts.find(p => p.slug === 'pyroscope-lessons')!;
+---
+
+<WritingLayout post={post}>
+  <h2>The Setup</h2>
+  <p>
+    We had 20+ microservices — a mix of .NET, Node.js, and Go — all running on Kubernetes. Our
+    observability stack was solid on the three pillars: metrics via Prometheus, logs via Loki, traces
+    via Tempo. But continuous profiling was a gap. When CPU spikes hit production, we were guessing.
+  </p>
+  <p>
+    We chose Grafana Pyroscope because it integrates natively into the LGTM stack. Flame graphs
+    alongside traces in the same Grafana panel — no context switching, no new query languages to learn.
+  </p>
+
+  <h2>Kong Ingress Auth</h2>
+  <p>
+    The first thing nobody tells you: Pyroscope exposes a single HTTP API with no built-in auth.
+    You need to front it with something. We used the Kong JWT plugin scoped per namespace.
+  </p>
+  <p>
+    Each squad got a token tied to their Kubernetes namespace labels. Alloy injected the token as a
+    header on every push. The upside: zero cross-team profile leakage. The gotcha: token rotation
+    requires redeploying Alloy configmaps — we now use external-secrets for this.
+  </p>
+
+  <h2>Grafana Alloy Pipelines</h2>
+  <p>
+    Alloy is the successor to Grafana Agent. Each language runtime needs a different scrape strategy:
+  </p>
+  <ul>
+    <li><strong>.NET</strong> — <code>pyroscope.ebpf</code> component. No app changes needed, but requires privileged pods and a pinned kernel version.</li>
+    <li><strong>Go</strong> — <code>/debug/pprof</code> scrape every 15s. Dead simple, works out of the box.</li>
+    <li><strong>Node.js</strong> — V8 CPU profiler endpoint exposed via a small middleware. Required one-line change per service.</li>
+  </ul>
+  <p>
+    The Alloy config lived in a ConfigMap managed by FluxCD. Any change went through a PR — no
+    ad-hoc kubectl applies allowed.
+  </p>
+
+  <h2>Scaling Profile Data</h2>
+  <p>
+    We hit two scaling walls in staging before going to prod.
+  </p>
+  <p>
+    <strong>Label cardinality.</strong> One team attached per-request labels (user ID, request path).
+    This created millions of unique label combinations and brought Pyroscope to its knees within an
+    hour. The fix: label strategy review in the PR template, enforced by a Conftest policy that
+    rejects high-cardinality label keys.
+  </p>
+  <p>
+    <strong>Object storage throughput.</strong> With 20+ services pushing profiles every 15 seconds,
+    S3 PUT rate limits became a real concern. We batched profiles in Alloy using the
+    <code>batch</code> component and configured a 30s flush interval. Reduced S3 requests by ~60%.
+  </p>
+
+  <h2>The Gotchas Nobody Warns You About</h2>
+  <ul>
+    <li>eBPF profilers are kernel-version sensitive. Two nodes on different kernels = silent profile gaps. Took us 3 days to notice because the missing data looked like quiet services, not broken collection.</li>
+    <li>Pyroscope's retention defaults are aggressive. Default is 7 days. Set your object storage retention explicitly or you'll lose historical profiles before you realize they're gone.</li>
+    <li>Flame graph drill-downs from Tempo traces require matching <code>service.name</code> labels. If your tracing and profiling label this differently, the link silently returns no data.</li>
+    <li>The Grafana LLM plugin integration for flame graph summaries requires Pyroscope ≥1.5. Check your version before trying to wire it up.</li>
+  </ul>
+
+  <h2>What Actually Moved the Needle</h2>
+  <p>
+    The tooling was 30% of the value. The other 70% was adoption. What worked:
+  </p>
+  <ul>
+    <li>Embedding flame graph links in incident runbooks — engineers encountered them during real incidents, not demos</li>
+    <li>Adding a "check flame graph before escalating" step to the on-call checklist</li>
+    <li>One lunch-and-learn where we live-debugged a real past incident using profiles</li>
+  </ul>
+  <p>
+    Average debug time dropped from ~45 minutes to ~12 minutes within two months. The bigger win
+    was engineers starting to check profiles proactively, catching regressions before they paged anyone.
+  </p>
+</WritingLayout>

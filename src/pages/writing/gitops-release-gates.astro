@@ -1,0 +1,104 @@
+---
+import WritingLayout from '../../layouts/WritingLayout.astro';
+import { writingPosts } from '../../data/writing';
+
+const post = writingPosts.find(p => p.slug === 'gitops-release-gates')!;
+---
+
+<WritingLayout post={post}>
+  <h2>Why Release Gates Fail</h2>
+  <p>
+    Most GitOps release gates fail for one of two reasons: they're too aggressive and generate
+    constant noise that engineers learn to ignore, or they're too permissive and don't catch actual
+    regressions. Both outcomes destroy trust in the automation.
+  </p>
+  <p>
+    The goal is gates that engineers trust enough to let run unsupervised — and know enough to
+    override when they have context the gate doesn't.
+  </p>
+
+  <h2>The Stack</h2>
+  <p>
+    Our setup: FluxCD for GitOps reconciliation, Prometheus for health metrics, and a custom
+    gate controller that blocks Flux's <code>Kustomization</code> progression until health checks pass.
+  </p>
+  <p>
+    FluxCD's native <code>HealthChecks</code> field handles basic readiness — pod restarts, deployment
+    rollouts. For semantic health (is the service actually working, not just running), we needed
+    something on top of it.
+  </p>
+
+  <h2>Prometheus Health Checks</h2>
+  <p>
+    Each service exposes a set of SLI metrics. The release gate queries these via the Prometheus
+    HTTP API during a bake window after each deploy. If any SLI degrades beyond a threshold, the
+    gate fires.
+  </p>
+  <p>
+    The three checks we run on every deploy:
+  </p>
+  <ul>
+    <li><strong>Error rate delta</strong> — compare p99 error rate in the 10 minutes post-deploy vs the 10-minute baseline before deploy. Alert if delta &gt; 5%.</li>
+    <li><strong>Latency shift</strong> — p95 latency before vs after. More sensitive than p99 for catching regressions that haven't yet caused errors.</li>
+    <li><strong>Saturation</strong> — CPU and memory vs the service's defined limits. Catches memory leaks and CPU regressions that wouldn't show in error rates immediately.</li>
+  </ul>
+  <p>
+    Thresholds are defined per-service in the GitOps repo. Services with inherently noisy metrics
+    get wider bands. New services start with strict defaults and widen as we learn their baseline.
+  </p>
+
+  <h2>FluxCD Rollback Behavior</h2>
+  <p>
+    When a gate fires, FluxCD doesn't automatically roll back. It suspends the <code>Kustomization</code>
+    and fires an alert. Engineers decide whether to roll back, hotfix forward, or override the gate.
+  </p>
+  <p>
+    This was a deliberate choice. Automatic rollbacks sound good but create problems:
+  </p>
+  <ul>
+    <li>During incidents, an auto-rollback can hide the faulty commit in git history in ways that are hard to untangle</li>
+    <li>Some regressions are expected and accepted (e.g., a feature that intentionally increases latency for correctness)</li>
+    <li>Rollback isn't always safe — database migrations, external API changes, and stateful services can make rollback worse than the regression</li>
+  </ul>
+  <p>
+    Instead, the gate surfaces all the information and puts the decision with the engineer. The
+    override is a single label on the Flux object — auditable, reversible, and clear in the git diff.
+  </p>
+
+  <h2>Keeping It Understandable During Incidents</h2>
+  <p>
+    A gate that fires during a production incident adds cognitive load at the worst time. Two things
+    that helped:
+  </p>
+  <p>
+    <strong>Gate output links to the dashboard.</strong> When the Prometheus check fails, the alert
+    message includes a pre-built Grafana URL scoped to that service, that deploy's time window, and
+    the specific metric that tripped the gate. Engineers land directly on the relevant graph, not
+    the Grafana home screen.
+  </p>
+  <p>
+    <strong>Gates have named reasons.</strong> "Health gate failed" is useless. "Error rate gate:
+    observed 8.2%, threshold 5%, baseline 1.1%" is actionable. The gate controller formats its
+    status condition with the exact numbers that triggered it.
+  </p>
+
+  <h2>What We Got Wrong Initially</h2>
+  <ul>
+    <li>Querying Prometheus at exactly T+0 post-deploy. Metrics take 15-30 seconds to scrape. We were comparing stale pre-deploy data to itself and calling it a pass. Added a 60s startup delay to all bake windows.</li>
+    <li>Using the same thresholds for all environments. Staging traffic is synthetic and behaves differently than production. Separate threshold configs per environment are necessary, not optional.</li>
+    <li>Not accounting for time-of-day variance. A 5% error rate increase at 3am during low traffic looks like noise. The same increase at peak is critical. We moved to relative thresholds (% change from rolling baseline) instead of absolute values.</li>
+  </ul>
+
+  <h2>The Trust Problem Is the Hard Part</h2>
+  <p>
+    Technical correctness isn't enough. Engineers need to understand why a gate fired, be able to
+    investigate it quickly, and trust that overriding it is safe and auditable. If any of those
+    properties are missing, they'll start bypassing the gate by default — and you're back to
+    manual deploys with extra steps.
+  </p>
+  <p>
+    The investment in clear error messages, dashboard links, and a well-documented override process
+    paid for itself in the first quarter. Fewer bypasses, faster incident response, and engineering
+    trust in the automation that's supposed to protect them.
+  </p>
+</WritingLayout>

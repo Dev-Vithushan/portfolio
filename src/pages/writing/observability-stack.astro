@@ -1,0 +1,98 @@
+---
+import WritingLayout from '../../layouts/WritingLayout.astro';
+import { writingPosts } from '../../data/writing';
+
+const post = writingPosts.find(p => p.slug === 'observability-stack')!;
+---
+
+<WritingLayout post={post}>
+  <h2>What LGTM Actually Stands For</h2>
+  <p>
+    LGTM is the Grafana Labs observability stack: <strong>L</strong>oki (logs), <strong>G</strong>rafana
+    (visualization), <strong>T</strong>empo (traces), <strong>M</strong>imir (metrics). Some teams
+    also add Pyroscope for profiles, making it LGTMP — though nobody calls it that yet.
+  </p>
+  <p>
+    The pitch is a unified query and visualization layer. One Grafana instance. Correlated signals.
+    Click from a trace to the logs from that exact span, then to the metrics for that service at that
+    timestamp. In practice, getting all of that to work cleanly takes real setup.
+  </p>
+
+  <h2>Loki — Logs</h2>
+  <p>
+    Loki indexes labels, not log content. This is the biggest mental shift coming from Elasticsearch.
+    Queries like <code>|= "error"</code> are full-text searches over the raw log stream — fast but
+    not indexed. Labels like <code>&#123;namespace="prod", app="api"&#125;</code> are what Loki
+    uses to narrow the stream before scanning.
+  </p>
+  <p>
+    Label design matters more than almost anything else. Too many labels = high cardinality = slow
+    queries and inflated storage. A good rule: only label what you'd filter on in production. Pod
+    name is usually a mistake. Namespace, app, and environment are usually right.
+  </p>
+  <p>
+    For collection, Grafana Alloy (or the older Promtail) runs as a DaemonSet and tails container
+    logs from the node. Pipeline stages let you parse JSON logs, extract fields as labels, and drop
+    noisy lines before they hit Loki.
+  </p>
+
+  <h2>Tempo — Traces</h2>
+  <p>
+    Tempo is an opinionated trace backend. It doesn't index span attributes — it stores traces by
+    trace ID and retrieves them by ID. Search is done via Tempo's TraceQL or by jumping from a
+    metric or log that has a trace ID embedded.
+  </p>
+  <p>
+    This means your services need to instrument with OpenTelemetry and propagate trace IDs. For
+    Kubernetes workloads, the Grafana Beyla eBPF auto-instrumentation agent can handle this without
+    code changes, though with less granularity than manual instrumentation.
+  </p>
+  <p>
+    The killer feature is trace-to-logs correlation. Embed <code>traceID</code> as a structured log
+    field, configure Grafana's derived fields to detect it, and you get a one-click link from any
+    trace span to the logs from that exact service at that exact time.
+  </p>
+
+  <h2>Mimir — Metrics</h2>
+  <p>
+    Mimir is horizontally scalable Prometheus. If you're running a single Prometheus instance, you
+    don't need Mimir. If you have multiple Prometheus instances, long retention requirements, or
+    multi-tenant needs, Mimir becomes relevant.
+  </p>
+  <p>
+    Mimir uses the same PromQL you already know. The operational cost is higher — it's a distributed
+    system with compactors, ingesters, queriers, and object storage dependencies. For smaller setups,
+    Prometheus + Thanos is often a simpler path to long-term storage.
+  </p>
+
+  <h2>Grafana — The Glue</h2>
+  <p>
+    Grafana's value in this stack isn't just dashboards. It's the correlation layer. Configure each
+    datasource, then use Grafana's Explore view to jump between signals without pre-building dashboards.
+  </p>
+  <p>
+    Useful configurations that aren't obvious:
+  </p>
+  <ul>
+    <li>Set Loki as a derived field source in Tempo to enable trace → log navigation</li>
+    <li>Add exemplars to Prometheus metrics to enable metric → trace navigation</li>
+    <li>Use Grafana's provisioning API to version-control all dashboards and datasources as YAML in Git</li>
+    <li>Enable Grafana OnCall if you want alerting — it integrates with PagerDuty, Slack, and the rest without needing a separate Alertmanager UI</li>
+  </ul>
+
+  <h2>When to Use What</h2>
+  <p>
+    A practical decision table for common questions:
+  </p>
+  <ul>
+    <li><strong>"Is the service up and healthy?"</strong> → Metrics (Mimir/Prometheus). Uptime, error rate, latency percentiles.</li>
+    <li><strong>"What happened during this incident?"</strong> → Logs (Loki). Exact error messages, stack traces, context.</li>
+    <li><strong>"Where is the latency coming from?"</strong> → Traces (Tempo). Waterfall view of the request path.</li>
+    <li><strong>"Why is CPU/memory high?"</strong> → Profiles (Pyroscope). Flame graphs show which function is burning cycles.</li>
+  </ul>
+  <p>
+    The stack is strongest when signals are correlated. Investing in consistent labeling across all
+    four — matching <code>service.name</code>, <code>namespace</code>, and <code>environment</code>
+    across every component — is the highest-leverage thing you can do before deploying any of it.
+  </p>
+</WritingLayout>

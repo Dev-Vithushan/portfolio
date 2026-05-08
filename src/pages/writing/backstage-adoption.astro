@@ -1,0 +1,100 @@
+---
+import WritingLayout from '../../layouts/WritingLayout.astro';
+import { writingPosts } from '../../data/writing';
+
+const post = writingPosts.find(p => p.slug === 'backstage-adoption')!;
+---
+
+<WritingLayout post={post}>
+  <h2>The Plugin Pile Problem</h2>
+  <p>
+    Most Backstage deployments start the same way: add the software catalog, install a few plugins,
+    point it at your GitHub org, and call it an internal developer platform. Then wonder why nobody
+    uses it six months later.
+  </p>
+  <p>
+    The problem isn't Backstage. It's treating a developer experience problem like an infrastructure
+    problem. You can't deploy your way to adoption. You have to earn it.
+  </p>
+
+  <h2>What We Had</h2>
+  <p>
+    When I inherited the platform, we had Backstage running with:
+  </p>
+  <ul>
+    <li>A software catalog with 40+ services — mostly auto-discovered, mostly missing owner info</li>
+    <li>The TechDocs plugin — documentation that was 6 months stale on most services</li>
+    <li>A scaffolder with 3 templates — none of which had been used in 2 months</li>
+    <li>A Kubernetes plugin that showed pod status nobody had asked for</li>
+  </ul>
+  <p>
+    Usage metrics told the story: ~8 unique users per week in an org of 60 engineers.
+  </p>
+
+  <h2>The Shift: Treating It Like a Product</h2>
+  <p>
+    We ran a two-week discovery sprint. Not to add features — to talk to engineers. We asked what
+    slowed them down, what they looked up repeatedly, what they wished existed. A few patterns emerged:
+  </p>
+  <ul>
+    <li>Finding who owns a service during an incident took too long (Slack thread archaeology)</li>
+    <li>Spinning up a new service meant copying config from an existing one and hoping you didn't miss anything</li>
+    <li>Understanding what a service depended on required reading multiple READMEs and pinging people</li>
+  </ul>
+  <p>
+    None of these were "we need more plugins." They were catalog quality, template reliability, and
+    dependency visibility problems. We already had the tools — they just weren't solving real problems.
+  </p>
+
+  <h2>What We Changed</h2>
+  <h3>Catalog quality became a blocker, not a nice-to-have</h3>
+  <p>
+    We added a CI check that fails PRs if the service's <code>catalog-info.yaml</code> is missing
+    a valid owner, lifecycle, or system. No more ghost entries. Within a month, 90% of services had
+    complete metadata.
+  </p>
+
+  <h3>Templates were rewritten with real services as the baseline</h3>
+  <p>
+    Instead of generic scaffolder templates, we took our two most common service types (REST API,
+    async worker) and extracted their exact production configuration into templates. Same Helm chart,
+    same Alloy config, same CI pipeline. Engineers got something that actually runs in production on
+    day one instead of a skeleton they'd spend a week wiring up.
+  </p>
+
+  <h3>We added one plugin that solved a real problem</h3>
+  <p>
+    The PagerDuty plugin. During an incident, clicking to the on-call engineer for a service became
+    one click from the catalog. No Slack hunting, no wiki pages, no "who owns payments again?"
+    Incident response time dropped measurably.
+  </p>
+
+  <h3>We removed four plugins nobody used</h3>
+  <p>
+    The Kubernetes pod status plugin, a cost explorer, a GitHub Insights panel, and a CI status
+    widget that duplicated what was already in GitHub. Fewer things to maintain, fewer things to break,
+    less cognitive load for new users trying to understand what Backstage is for.
+  </p>
+
+  <h2>What Moved the Needle</h2>
+  <p>
+    Weekly active users went from 8 to 40+ over about 10 weeks. The changes that drove it:
+  </p>
+  <ul>
+    <li><strong>Catalog quality enforcement</strong> — the platform is only useful if the data is trustworthy. Once engineers trusted the catalog, they started using it.</li>
+    <li><strong>Templates that work out of the box</strong> — two engineers used the new service template in the first week and told their teams. Word of mouth is faster than documentation.</li>
+    <li><strong>Solving an incident pain point</strong> — the PagerDuty link gave Backstage a reason to be open during incidents, not just onboarding.</li>
+  </ul>
+
+  <h2>The Lesson</h2>
+  <p>
+    Internal platforms compete with muscle memory. Engineers already know how to find things — it
+    just takes longer and hurts more. To displace those habits, the platform has to be noticeably
+    faster or more reliable on something engineers do frequently.
+  </p>
+  <p>
+    That means ignoring feature requests that sound good but happen rarely, and obsessing over the
+    three or four workflows that happen every day. Get those right and the adoption follows. Try to
+    be everything and you end up used by nobody.
+  </p>
+</WritingLayout>

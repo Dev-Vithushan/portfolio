@@ -5,28 +5,30 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posts = writingPosts.slice(0, 3);
 ---
 
-<section id="writing" class="py-24 max-w-6xl mx-auto px-6">
+<section id="writing" class="py-16 max-w-7xl mx-auto px-4 sm:px-6">
   <p class="section-label mb-3">// WRITING</p>
   <h2 class="text-3xl md:text-4xl font-bold text-[#FAFAFA] mb-3">Things I've written</h2>
-  <p class="text-[#71717A] mb-12">Lessons from production, not the happy path.</p>
+  <p class="text-[#71717A] mb-8">Lessons from production, not the happy path.</p>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     {posts.map(post => (
-      <article class="p-6 rounded-xl border border-[#27272A] bg-[#111111] hover:border-[#3F3F46] transition-all hover:-translate-y-1 group">
-        <div class="flex flex-wrap gap-1.5 mb-4">
-          {post.tags.map(tag => (
-            <span class="px-2 py-0.5 text-xs rounded-md bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20">{tag}</span>
-          ))}
-        </div>
-        <h3 class="font-bold text-[#FAFAFA] mb-2 leading-snug group-hover:text-[#3B82F6] transition-colors">
-          {post.title}
-        </h3>
-        <p class="text-sm text-[#71717A] leading-relaxed mb-4">{post.description}</p>
-        <div class="flex items-center justify-between text-xs text-[#71717A]">
-          <span>{post.date}</span>
-          <span>{post.readingTime} min read</span>
-        </div>
-      </article>
+      <a href={`${base}/writing/${post.slug}`} class="block group">
+        <article class="p-6 rounded-xl border border-[#27272A] bg-[#111111] hover:border-[#3F3F46] transition-all hover:-translate-y-1 h-full">
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            {post.tags.map(tag => (
+              <span class="px-2 py-0.5 text-xs rounded-md bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20">{tag}</span>
+            ))}
+          </div>
+          <h3 class="font-bold text-[#FAFAFA] mb-2 leading-snug group-hover:text-[#3B82F6] transition-colors">
+            {post.title}
+          </h3>
+          <p class="text-sm text-[#71717A] leading-relaxed mb-4">{post.description}</p>
+          <div class="flex items-center justify-between text-xs text-[#71717A]">
+            <span>{post.date}</span>
+            <span>{post.readingTime} min read</span>
+          </div>
+        </article>
+      </a>
     ))}
   </div>
 

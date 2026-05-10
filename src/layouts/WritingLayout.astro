@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import type { WritingPost } from '../data/writing';
+import { writingPosts } from '../data/writing';
 
 interface Props {
   post: WritingPost;
@@ -14,79 +15,272 @@ const formattedDate = new Date(post.date).toLocaleDateString('en-US', {
   month: 'long',
   day: 'numeric',
 });
+
+const currentIndex = writingPosts.findIndex(p => p.slug === post.slug);
+const nextPost = writingPosts[currentIndex + 1] ?? null;
+const prevPost = writingPosts[currentIndex - 1] ?? null;
 ---
 
 <BaseLayout title={`${post.title} — Vithushan`} description={post.description}>
-  <div id="progress-bar" class="fixed top-0 left-0 h-0.5 bg-[#3B82F6] z-50 transition-all duration-100" style="width: 0%"></div>
+  <!-- Reading progress bar -->
+  <div id="progress-bar" class="fixed top-0 left-0 h-[2px] z-50" style="width: 0%">
+    <div class="h-full bg-gradient-to-r from-[#3B82F6] to-[#818CF8] shadow-[0_0_8px_#3B82F6]"></div>
+  </div>
 
-  <article class="max-w-3xl mx-auto px-6 pt-28 pb-20">
-    <a href={`${base}/writing`} class="inline-flex items-center gap-2 text-sm text-[#71717A] hover:text-[#FAFAFA] transition-colors mb-10">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
-      </svg>
-      Back to writing
-    </a>
+  <!-- Reading time indicator -->
+  <div id="reading-indicator" class="fixed bottom-6 right-6 z-40 opacity-0 transition-opacity duration-300" data-reading-time={post.readingTime}>
+    <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#18181B] border border-[#27272A] text-xs text-[#71717A] shadow-lg">
+      <div class="w-1.5 h-1.5 rounded-full bg-[#3B82F6] animate-pulse"></div>
+      <span id="time-left">{post.readingTime} min left</span>
+    </div>
+  </div>
 
-    <div class="mb-12">
-      <div class="flex flex-wrap gap-2 mb-4">
-        {post.tags.map(tag => (
-          <span class="px-3 py-1 text-xs font-medium rounded-full bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20">{tag}</span>
-        ))}
-      </div>
+  <main>
+    <!-- Hero -->
+    <div class="relative overflow-hidden border-b border-[#18181B]">
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(59,130,246,0.08),transparent)]"></div>
+      <div class="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#3B82F6]/5 rounded-full blur-3xl pointer-events-none"></div>
 
-      <h1 class="text-3xl md:text-5xl font-bold text-[#FAFAFA] mb-4 leading-tight">{post.title}</h1>
-      <p class="text-lg text-[#A1A1AA] mb-6 italic">{post.description}</p>
+      <div class="relative max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-10">
+        <a href={`${base}/writing`} class="inline-flex items-center gap-2 text-sm text-[#52525B] hover:text-[#A1A1AA] transition-colors mb-10 group">
+          <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+          </svg>
+          Back to writing
+        </a>
 
-      <div class="flex items-center gap-4 text-sm text-[#71717A]">
-        <span>{formattedDate}</span>
-        <span>·</span>
-        <span>{post.readingTime} min read</span>
+        <div class="flex flex-wrap gap-2 mb-6">
+          {post.tags.map(tag => (
+            <span class="px-2.5 py-1 text-xs font-medium rounded-md bg-[#3B82F6]/10 text-[#3B82F6] border border-[#3B82F6]/20 tracking-wide">{tag}</span>
+          ))}
+        </div>
+
+        <h1 class="text-3xl md:text-[2.75rem] font-bold text-[#FAFAFA] mb-5 leading-[1.15] tracking-tight">{post.title}</h1>
+        <p class="text-lg text-[#71717A] mb-8 leading-relaxed max-w-2xl">{post.description}</p>
+
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#818CF8] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">V</div>
+          <div>
+            <p class="text-sm text-[#FAFAFA] font-medium">Vithushan</p>
+            <div class="flex items-center gap-2 text-xs text-[#52525B]">
+              <span>{formattedDate}</span>
+              <span>·</span>
+              <span>{post.readingTime} min read</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="prose-dark space-y-6">
-      <slot />
+    <!-- Article body -->
+    <article class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+      <div class="prose-dark">
+        <slot />
+      </div>
+    </article>
+
+    <!-- Divider -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <div class="border-t border-[#18181B]"></div>
     </div>
-  </article>
+
+    <!-- Prev / Next nav -->
+    {(prevPost || nextPost) && (
+      <nav class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {prevPost ? (
+            <a href={`${base}/writing/${prevPost.slug}`} class="group flex flex-col gap-1 p-5 rounded-xl border border-[#27272A] bg-[#111111] hover:border-[#3B82F6]/40 transition-all">
+              <span class="text-xs text-[#52525B] flex items-center gap-1.5">
+                <svg class="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                </svg>
+                Previous
+              </span>
+              <span class="text-sm font-medium text-[#A1A1AA] group-hover:text-[#FAFAFA] transition-colors leading-snug">{prevPost.title}</span>
+            </a>
+          ) : <div />}
+          {nextPost && (
+            <a href={`${base}/writing/${nextPost.slug}`} class="group flex flex-col gap-1 p-5 rounded-xl border border-[#27272A] bg-[#111111] hover:border-[#3B82F6]/40 transition-all text-right md:col-start-2">
+              <span class="text-xs text-[#52525B] flex items-center gap-1.5 justify-end">
+                Next
+                <svg class="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </span>
+              <span class="text-sm font-medium text-[#A1A1AA] group-hover:text-[#FAFAFA] transition-colors leading-snug">{nextPost.title}</span>
+            </a>
+          )}
+        </div>
+      </nav>
+    )}
+  </main>
 </BaseLayout>
 
 <style>
+  /* ── Typography ── */
   .prose-dark {
     color: #A1A1AA;
-    line-height: 1.8;
+    font-size: 1.0625rem;
+    line-height: 1.85;
   }
+
+  /* First paragraph drop-cap */
+  .prose-dark > p:first-of-type::first-letter {
+    float: left;
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 0.85;
+    color: #3B82F6;
+    margin-right: 0.1em;
+    margin-top: 0.05em;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ── Headings ── */
   .prose-dark h2 {
     color: #FAFAFA;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
-    margin-top: 2.5rem;
+    margin-top: 3rem;
     margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid #27272A;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
   }
+  .prose-dark h2::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 1.1em;
+    background: linear-gradient(to bottom, #3B82F6, #818CF8);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
   .prose-dark h3 {
-    color: #FAFAFA;
-    font-size: 1.125rem;
+    color: #E4E4E7;
+    font-size: 1.05rem;
     font-weight: 600;
-    margin-top: 1.5rem;
+    margin-top: 2rem;
     margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
   }
-  .prose-dark p { margin-bottom: 1rem; }
-  .prose-dark ul { list-style: none; padding: 0; margin-bottom: 1rem; }
-  .prose-dark ul li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; }
-  .prose-dark ul li::before { content: "▸"; position: absolute; left: 0; color: #3B82F6; }
-  .prose-dark code { font-family: 'IBM Plex Mono', monospace; background: #1A1A1A; padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.875rem; color: #3B82F6; }
-  .prose-dark pre { background: #111111; border: 1px solid #27272A; border-radius: 0.75rem; padding: 1.25rem; overflow-x: auto; margin-bottom: 1rem; }
-  .prose-dark pre code { background: none; padding: 0; }
-  .callout { background: #111111; border: 1px solid #3B82F6/30; border-left: 3px solid #3B82F6; border-radius: 0 0.5rem 0.5rem 0; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+
+  /* ── Paragraphs ── */
+  .prose-dark p {
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── Lists ── */
+  .prose-dark ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .prose-dark ul li {
+    padding-left: 1.5rem;
+    position: relative;
+  }
+  .prose-dark ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: #3B82F6;
+    font-size: 0.75rem;
+    top: 0.3em;
+  }
+
+  /* ── Inline code ── */
+  .prose-dark code {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #1C1C1E;
+    border: 1px solid #2D2D30;
+    padding: 0.15rem 0.45rem;
+    border-radius: 5px;
+    font-size: 0.825rem;
+    color: #93C5FD;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Code blocks ── */
+  .prose-dark pre {
+    background: #0D0D0F;
+    border: 1px solid #1E1E22;
+    border-radius: 0.875rem;
+    padding: 1.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    position: relative;
+  }
+  .prose-dark pre::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #3B82F6/30, transparent);
+  }
+  .prose-dark pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #E4E4E7;
+    font-size: 0.875rem;
+  }
+
+  /* ── Figures ── */
+  .prose-dark figure {
+    margin: 2rem 0;
+  }
+  .prose-dark figcaption {
+    font-size: 0.8rem;
+    color: #52525B;
+    text-align: center;
+    padding: 0.5rem 1rem;
+  }
+  .prose-dark img {
+    width: 100%;
+    border-radius: 0.75rem 0.75rem 0 0;
+  }
+
+  /* ── Strong ── */
+  .prose-dark strong {
+    color: #E4E4E7;
+    font-weight: 600;
+  }
+
+  /* ── Em ── */
+  .prose-dark em {
+    color: #A1A1AA;
+    font-style: italic;
+  }
 </style>
 
 <script>
   const bar = document.getElementById('progress-bar');
+  const indicator = document.getElementById('reading-indicator');
+  const timeLeft = document.getElementById('time-left');
+  const totalMins = parseInt(indicator?.dataset.readingTime ?? '5', 10);
+
   window.addEventListener('scroll', () => {
-    if (!bar) return;
     const scrolled = window.scrollY;
     const total = document.body.scrollHeight - window.innerHeight;
-    bar.style.width = `${(scrolled / total) * 100}%`;
+    const pct = total > 0 ? scrolled / total : 0;
+
+    if (bar) bar.style.width = `${pct * 100}%`;
+
+    if (indicator) {
+      indicator.style.opacity = scrolled > 200 ? '1' : '0';
+    }
+
+    if (timeLeft) {
+      const remaining = Math.ceil(totalMins * (1 - pct));
+      timeLeft.textContent = remaining <= 1 ? '< 1 min left' : `${remaining} min left`;
+    }
   });
 </script>

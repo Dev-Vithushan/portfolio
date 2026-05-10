@@ -1,0 +1,67 @@
+<svg viewBox="0 0 800 340" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace">
+  <rect width="800" height="340" fill="#0D0D0F" rx="16"/>
+  <defs>
+    <pattern id="g2" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1A1A1E" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="bl2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="340" fill="url(#g2)" rx="16" opacity="0.4"/>
+  <text x="400" y="32" text-anchor="middle" fill="#52525B" font-size="11" letter-spacing="2">LGTM OBSERVABILITY STACK</text>
+
+  <!-- Center: Grafana -->
+  <rect x="300" y="120" width="200" height="100" rx="14" fill="#111115" stroke="url(#bl2)" stroke-width="2"/>
+  <text x="400" y="155" text-anchor="middle" fill="#FAFAFA" font-size="13" font-weight="bold">GRAFANA</text>
+  <text x="400" y="175" text-anchor="middle" fill="#71717A" font-size="10">Unified UI · Correlations</text>
+  <text x="400" y="195" text-anchor="middle" fill="#52525B" font-size="9">Explore · Dashboards · Alerts</text>
+
+  <!-- L - Loki -->
+  <rect x="40" y="50" width="180" height="90" rx="12" fill="#111115" stroke="#27272A" stroke-width="1.5"/>
+  <rect x="40" y="50" width="180" height="3" rx="2" fill="#F59E0B"/>
+  <text x="130" y="80" text-anchor="middle" fill="#F59E0B" font-size="11" font-weight="bold">L — LOKI</text>
+  <text x="130" y="98" text-anchor="middle" fill="#71717A" font-size="10">Logs</text>
+  <text x="130" y="114" text-anchor="middle" fill="#52525B" font-size="9">Label-indexed · LogQL</text>
+  <!-- connector -->
+  <line x1="220" y1="95" x2="298" y2="150" stroke="#F59E0B" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+
+  <!-- T - Tempo -->
+  <rect x="580" y="50" width="180" height="90" rx="12" fill="#111115" stroke="#27272A" stroke-width="1.5"/>
+  <rect x="580" y="50" width="180" height="3" rx="2" fill="#A78BFA"/>
+  <text x="670" y="80" text-anchor="middle" fill="#A78BFA" font-size="11" font-weight="bold">T — TEMPO</text>
+  <text x="670" y="98" text-anchor="middle" fill="#71717A" font-size="10">Traces</text>
+  <text x="670" y="114" text-anchor="middle" fill="#52525B" font-size="9">TraceQL · OTel native</text>
+  <!-- connector -->
+  <line x1="580" y1="95" x2="502" y2="150" stroke="#A78BFA" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+
+  <!-- M - Mimir -->
+  <rect x="580" y="210" width="180" height="90" rx="12" fill="#111115" stroke="#27272A" stroke-width="1.5"/>
+  <rect x="580" y="210" width="180" height="3" rx="2" fill="#22C55E"/>
+  <text x="670" y="240" text-anchor="middle" fill="#22C55E" font-size="11" font-weight="bold">M — MIMIR</text>
+  <text x="670" y="258" text-anchor="middle" fill="#71717A" font-size="10">Metrics</text>
+  <text x="670" y="274" text-anchor="middle" fill="#52525B" font-size="9">PromQL · Scalable Prometheus</text>
+  <!-- connector -->
+  <line x1="580" y1="255" x2="502" y2="220" stroke="#22C55E" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+
+  <!-- P - Pyroscope -->
+  <rect x="40" y="210" width="180" height="90" rx="12" fill="#111115" stroke="#27272A" stroke-width="1.5"/>
+  <rect x="40" y="210" width="180" height="3" rx="2" fill="#F97316"/>
+  <text x="130" y="240" text-anchor="middle" fill="#F97316" font-size="11" font-weight="bold">+ PYROSCOPE</text>
+  <text x="130" y="258" text-anchor="middle" fill="#71717A" font-size="10">Profiles</text>
+  <text x="130" y="274" text-anchor="middle" fill="#52525B" font-size="9">Flame graphs · eBPF</text>
+  <!-- connector -->
+  <line x1="220" y1="255" x2="298" y2="220" stroke="#F97316" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+
+  <!-- bottom signal guide -->
+  <rect x="160" y="308" width="10" height="10" rx="2" fill="#F59E0B" opacity="0.7"/>
+  <text x="177" y="318" fill="#52525B" font-size="9">Logs</text>
+  <rect x="235" y="308" width="10" height="10" rx="2" fill="#A78BFA" opacity="0.7"/>
+  <text x="252" y="318" fill="#52525B" font-size="9">Traces</text>
+  <rect x="315" y="308" width="10" height="10" rx="2" fill="#22C55E" opacity="0.7"/>
+  <text x="332" y="318" fill="#52525B" font-size="9">Metrics</text>
+  <rect x="395" y="308" width="10" height="10" rx="2" fill="#F97316" opacity="0.7"/>
+  <text x="412" y="318" fill="#52525B" font-size="9">Profiles</text>
+  <text x="510" y="318" fill="#3B82F6" font-size="9">→ correlated in Grafana Explore</text>
+</svg>

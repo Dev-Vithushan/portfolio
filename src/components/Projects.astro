@@ -3,11 +3,11 @@ import { projects } from '../data/projects';
 import ProjectCard from './ProjectCard.astro';
 ---
 
-<section id="projects" class="py-24 bg-[#0A0A0A]">
-  <div class="max-w-6xl mx-auto px-6">
+<section id="projects" class="py-16 bg-[#0A0A0A]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <p class="section-label mb-3">// FEATURED WORK</p>
     <h2 class="text-3xl md:text-4xl font-bold text-[#FAFAFA] mb-3">Projects I've shipped</h2>
-    <p class="text-[#71717A] mb-12">Click any project for the full case study.</p>
+    <p class="text-[#71717A] mb-8">Click any project for the full case study.</p>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       {projects.filter(p => p.featured).map(project => (

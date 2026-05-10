@@ -3,9 +3,15 @@ import WritingLayout from '../../layouts/WritingLayout.astro';
 import { writingPosts } from '../../data/writing';
 
 const post = writingPosts.find(p => p.slug === 'ai-flame-graphs')!;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <WritingLayout post={post}>
+  <figure class="my-8 rounded-xl overflow-hidden border border-[#27272A]">
+    <img src={`${base}/images/writing/flame-graph.svg`} alt="Flame graph with LLM analysis overlay" class="w-full" loading="lazy"/>
+    <figcaption class="px-4 py-2 bg-[#111115] text-xs text-[#52525B] text-center">Flame graph with inline LLM analysis — hot RSA verify path flagged automatically</figcaption>
+  </figure>
+
   <h2>The Problem with Flame Graphs</h2>
   <p>
     Flame graphs are one of the most information-dense debugging tools available. They're also

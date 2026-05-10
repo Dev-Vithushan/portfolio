@@ -3,9 +3,15 @@ import WritingLayout from '../../layouts/WritingLayout.astro';
 import { writingPosts } from '../../data/writing';
 
 const post = writingPosts.find(p => p.slug === 'pyroscope-lessons')!;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <WritingLayout post={post}>
+  <figure class="my-8 rounded-xl overflow-hidden border border-[#27272A]">
+    <img src={`${base}/images/writing/pyroscope-pipeline.svg`} alt="Pyroscope profiling pipeline: Services → Alloy → Pyroscope → Grafana" class="w-full" loading="lazy"/>
+    <figcaption class="px-4 py-2 bg-[#111115] text-xs text-[#52525B] text-center">Profiling pipeline — Alloy collects, Pyroscope stores, Grafana visualizes</figcaption>
+  </figure>
+
   <h2>The Setup</h2>
   <p>
     We had 20+ microservices — a mix of .NET, Node.js, and Go — all running on Kubernetes. Our

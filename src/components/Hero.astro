@@ -9,13 +9,13 @@ const roles = ['DevOps Engineer', 'Site Reliability Engineer', 'Cloud Engineer']
 const techBadges = ['Kubernetes', 'Grafana', 'Pyroscope', 'AWS', 'Backstage', 'FluxCD', 'Terraform'];
 ---
 
-<section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+<section id="hero" class="relative min-h-[82vh] flex items-center justify-center overflow-hidden">
   <!-- Grid background -->
   <div class="absolute inset-0 grid-bg opacity-30 pointer-events-none"></div>
   <!-- Radial gradient mask -->
   <div class="absolute inset-0 bg-gradient-radial pointer-events-none"></div>
 
-  <div class="relative z-10 max-w-4xl mx-auto px-6 text-center pt-24 pb-16">
+  <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center pt-20 pb-10">
     <!-- Profile photo -->
     <div class="profile-frame mx-auto mb-6 animate-fade-in">
       <img
@@ -53,7 +53,7 @@ const techBadges = ['Kubernetes', 'Grafana', 'Pyroscope', 'AWS', 'Backstage', 'F
     </p>
 
     <!-- CTAs -->
-    <div class="flex flex-wrap items-center justify-center gap-4 mb-12">
+    <div class="flex flex-wrap items-center justify-center gap-4 mb-8">
       <a href="#projects" class="btn-primary text-base px-6 py-3">
         View Projects
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@ const techBadges = ['Kubernetes', 'Grafana', 'Pyroscope', 'AWS', 'Backstage', 'F
     </div>
 
     <!-- Tech badges -->
-    <div class="flex flex-wrap justify-center gap-2 mb-16">
+    <div class="flex flex-wrap justify-center gap-2 mb-10">
       {techBadges.map((badge, i) => (
         <span
           class="px-3 py-1 text-xs font-mono rounded-full border border-[#27272A] text-[#71717A] bg-[#111111] hover:border-[#3B82F6] hover:text-[#3B82F6] transition-all cursor-default"

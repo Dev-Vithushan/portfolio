@@ -3,9 +3,15 @@ import WritingLayout from '../../layouts/WritingLayout.astro';
 import { writingPosts } from '../../data/writing';
 
 const post = writingPosts.find(p => p.slug === 'observability-stack')!;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <WritingLayout post={post}>
+  <figure class="my-8 rounded-xl overflow-hidden border border-[#27272A]">
+    <img src={`${base}/images/writing/lgtm-stack.svg`} alt="LGTM observability stack diagram" class="w-full" loading="lazy"/>
+    <figcaption class="px-4 py-2 bg-[#111115] text-xs text-[#52525B] text-center">The LGTM stack — Loki, Grafana, Tempo, Mimir — correlated in one UI</figcaption>
+  </figure>
+
   <h2>What LGTM Actually Stands For</h2>
   <p>
     LGTM is the Grafana Labs observability stack: <strong>L</strong>oki (logs), <strong>G</strong>rafana

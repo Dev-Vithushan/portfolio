@@ -1,0 +1,102 @@
+<svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace">
+  <rect width="800" height="320" fill="#0D0D0F" rx="16"/>
+  <defs>
+    <pattern id="g5" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1A1A1E" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+    <linearGradient id="barFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#27272A"/>
+      <stop offset="100%" stop-color="#1C1C1E"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="320" fill="url(#g5)" rx="16" opacity="0.4"/>
+
+  <text x="400" y="30" text-anchor="middle" fill="#52525B" font-size="11" letter-spacing="2">BACKSTAGE WEEKLY ACTIVE USERS — 10 WEEK JOURNEY</text>
+
+  <!-- Y axis -->
+  <line x1="80" y1="55" x2="80" y2="260" stroke="#27272A" stroke-width="1"/>
+  <!-- X axis -->
+  <line x1="80" y1="260" x2="760" y2="260" stroke="#27272A" stroke-width="1"/>
+
+  <!-- Y labels -->
+  <text x="68" y="260" text-anchor="end" fill="#52525B" font-size="9">0</text>
+  <text x="68" y="216" text-anchor="end" fill="#52525B" font-size="9">10</text>
+  <text x="68" y="172" text-anchor="end" fill="#52525B" font-size="9">20</text>
+  <text x="68" y="128" text-anchor="end" fill="#52525B" font-size="9">30</text>
+  <text x="68" y="84" text-anchor="end" fill="#52525B" font-size="9">40</text>
+  <!-- Y gridlines -->
+  <line x1="80" y1="216" x2="760" y2="216" stroke="#1C1C1E" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="80" y1="172" x2="760" y2="172" stroke="#1C1C1E" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="80" y1="128" x2="760" y2="128" stroke="#1C1C1E" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="80" y1="84" x2="760" y2="84" stroke="#1C1C1E" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- Bars: WAU data: 8,9,10,12,18,24,30,35,38,42 -->
+  <!-- bar width=44, gap=22, start x=94 -->
+  <!-- max=40 → scale: (val/40)*176 = height, y=260-height -->
+
+  <!-- W1: 8 → h=35 -->
+  <rect x="94" y="225" width="44" height="35" rx="4" fill="url(#barFade)"/>
+  <text x="116" y="273" text-anchor="middle" fill="#52525B" font-size="8">W1</text>
+  <text x="116" y="219" text-anchor="middle" fill="#52525B" font-size="9">8</text>
+
+  <!-- W2: 9 → h=39 -->
+  <rect x="160" y="221" width="44" height="39" rx="4" fill="url(#barFade)"/>
+  <text x="182" y="273" text-anchor="middle" fill="#52525B" font-size="8">W2</text>
+  <text x="182" y="215" text-anchor="middle" fill="#52525B" font-size="9">9</text>
+
+  <!-- W3: 10 → h=44 -->
+  <rect x="226" y="216" width="44" height="44" rx="4" fill="url(#barFade)"/>
+  <text x="248" y="273" text-anchor="middle" fill="#52525B" font-size="8">W3</text>
+  <!-- annotation: catalog enforcement -->
+  <line x1="248" y1="210" x2="248" y2="185" stroke="#F59E0B" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="258" y="180" fill="#F59E0B" font-size="8">catalog CI check</text>
+  <text x="248" y="210" text-anchor="middle" fill="#52525B" font-size="9">10</text>
+
+  <!-- W4: 12 → h=53 -->
+  <rect x="292" y="207" width="44" height="53" rx="4" fill="url(#barFade)"/>
+  <text x="314" y="273" text-anchor="middle" fill="#52525B" font-size="8">W4</text>
+  <text x="314" y="201" text-anchor="middle" fill="#52525B" font-size="9">12</text>
+
+  <!-- W5: 18 → h=79 (new templates shipped) -->
+  <rect x="358" y="181" width="44" height="79" rx="4" fill="url(#barGrad)" opacity="0.6"/>
+  <text x="380" y="273" text-anchor="middle" fill="#71717A" font-size="8">W5</text>
+  <!-- annotation -->
+  <line x1="380" y1="175" x2="380" y2="148" stroke="#3B82F6" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="392" y="145" fill="#3B82F6" font-size="8">new templates</text>
+  <text x="380" y="175" text-anchor="middle" fill="#71717A" font-size="9">18</text>
+
+  <!-- W6: 24 → h=105 -->
+  <rect x="424" y="155" width="44" height="105" rx="4" fill="url(#barGrad)" opacity="0.7"/>
+  <text x="446" y="273" text-anchor="middle" fill="#71717A" font-size="8">W6</text>
+  <text x="446" y="149" text-anchor="middle" fill="#71717A" font-size="9">24</text>
+
+  <!-- W7: 30 → h=132 (PagerDuty plugin) -->
+  <rect x="490" y="128" width="44" height="132" rx="4" fill="url(#barGrad)" opacity="0.8"/>
+  <text x="512" y="273" text-anchor="middle" fill="#A1A1AA" font-size="8">W7</text>
+  <line x1="512" y1="122" x2="512" y2="95" stroke="#A78BFA" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="524" y="92" fill="#A78BFA" font-size="8">PagerDuty plugin</text>
+  <text x="512" y="122" text-anchor="middle" fill="#A1A1AA" font-size="9">30</text>
+
+  <!-- W8: 35 → h=154 -->
+  <rect x="556" y="106" width="44" height="154" rx="4" fill="url(#barGrad)" opacity="0.9"/>
+  <text x="578" y="273" text-anchor="middle" fill="#A1A1AA" font-size="8">W8</text>
+  <text x="578" y="100" text-anchor="middle" fill="#A1A1AA" font-size="9">35</text>
+
+  <!-- W9: 38 → h=167 -->
+  <rect x="622" y="93" width="44" height="167" rx="4" fill="url(#barGrad)"/>
+  <text x="644" y="273" text-anchor="middle" fill="#FAFAFA" font-size="8">W9</text>
+  <text x="644" y="87" text-anchor="middle" fill="#FAFAFA" font-size="9">38</text>
+
+  <!-- W10: 42 → h=185 -->
+  <rect x="688" y="75" width="44" height="185" rx="4" fill="url(#barGrad)"/>
+  <text x="710" y="273" text-anchor="middle" fill="#FAFAFA" font-size="8">W10</text>
+  <text x="710" y="69" text-anchor="middle" fill="#3B82F6" font-size="10" font-weight="bold">42</text>
+
+  <!-- Goal line at 40 -->
+  <line x1="80" y1="84" x2="760" y2="84" stroke="#22C55E" stroke-width="1" stroke-dasharray="6,4" opacity="0.5"/>
+  <text x="764" y="87" fill="#22C55E" font-size="8">40 target</text>
+</svg>
